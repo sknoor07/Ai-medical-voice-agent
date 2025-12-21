@@ -1,13 +1,13 @@
 import HeroSectionOne from "@/components/hero-section-demo-1";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { FeatureBentoGrid } from "./_components/Fetaure_BentoGrid";
+import { AnimatedTestimonialsDemo } from "./_components/AnimatedTestimonialsDemo";
+import { BentoGridThirdDemo } from "./_components/BentoGrid";
 
 export default function Home() {
   return (
     <div>
       <HeroSectionOne />
-      <FeatureBentoGrid />
+      <BentoGridThirdDemo />
+      <AnimatedTestimonialsDemo />
     </div>
   );
 }
