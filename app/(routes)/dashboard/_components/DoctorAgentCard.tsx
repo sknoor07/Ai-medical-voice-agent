@@ -16,7 +16,7 @@ export type doctorAgent = {
 
 function DoctorAgentCard({ doctorAgent }: { doctorAgent: doctorAgent }) {
   return (
-    <div className=" p-4 border rounded-2xl shadow-md">
+    <div className=" p-4 border rounded-2xl  hover:border-blue-500 shadow-lg transition-all cursor-pointer ">
       <Image
         src={doctorAgent.image}
         alt={doctorAgent.specialist}
