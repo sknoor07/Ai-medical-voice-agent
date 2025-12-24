@@ -14,15 +14,22 @@ export async function POST(req: NextRequest) {
           content:
             "User Notes/ Symptoms:" +
             notes +
-            "Depends on user notes and symptoms. please suggest list of doctors, Return the Object in JSON format only ",
+            "Depends on user notes and symptoms. please suggest list of doctors, Return the response as Array of Object in JSON format only ",
         },
       ],
     });
     const rawResponse = completion?.choices[0]?.message?.content;
+    console.log("Raw Response:", rawResponse);
+    // const res =
+    //   rawResponse &&
+    //   rawResponse.trim().replace("```json", "").replace("```", "");
+    // const JSONRes = JSON.parse(res || "{}");
+    // return NextResponse.json(JSONRes);
     if (!rawResponse) {
       return NextResponse.json({ doctors: [] });
     }
     const parsed = JSON.parse(rawResponse.replace(/```json|```/g, "").trim());
+    console.log("Parsed Response:", parsed);
 
     return NextResponse.json(parsed);
   } catch (error) {

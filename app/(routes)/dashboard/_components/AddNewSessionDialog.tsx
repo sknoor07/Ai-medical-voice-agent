@@ -43,7 +43,7 @@ function AddNewSessionDialog() {
           ) : (
             <DialogTitle>Suggested Doctors</DialogTitle>
           )}
-          <DialogDescription>
+          <DialogDescription asChild>
             {!suggesteddoctors ? (
               <div>
                 <h2> Add Symptoms or Any Other Details</h2>
