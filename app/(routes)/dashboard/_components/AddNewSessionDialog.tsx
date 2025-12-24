@@ -75,8 +75,12 @@ function AddNewSessionDialog() {
               className="cursor-pointer"
               onClick={async () => await onClickNext()}
             >
-              {loading && <Loader2 className="animate-spin" />}
-              Next <IconArrowRight />
+              Next{" "}
+              {loading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <IconArrowRight />
+              )}
             </Button>
           ) : (
             <Button type="submit" className="cursor-pointer">
