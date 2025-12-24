@@ -2,6 +2,8 @@ import React from "react";
 import DashboardHeader from "./_components/DashboardHeader";
 import HistoryList from "./_components/HistoryList";
 import { Button } from "@/components/ui/button";
+import DoctorAgentlist from "./_components/DoctorAgentlist";
+import AddNewSessionDialog from "./_components/AddNewSessionDialog";
 
 function Dashboard() {
   return (
@@ -15,9 +17,10 @@ function Dashboard() {
             View and manage all your doctor conversations
           </p>
         </div>
-        <Button className=" cursor-pointer">+ Consult with Doctor</Button>
+        <AddNewSessionDialog />
       </div>
       <HistoryList />
+      <DoctorAgentlist />
     </div>
   );
 }
