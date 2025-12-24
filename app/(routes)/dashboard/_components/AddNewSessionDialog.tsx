@@ -71,7 +71,7 @@ function AddNewSessionDialog() {
           {!suggesteddoctors ? (
             <Button
               type="submit"
-              disabled={note.length === 0}
+              disabled={note.length === 0 || loading}
               className="cursor-pointer"
               onClick={async () => await onClickNext()}
             >
