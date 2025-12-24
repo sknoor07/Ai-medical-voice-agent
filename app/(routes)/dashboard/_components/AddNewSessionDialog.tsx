@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { IconArrowRight } from "@tabler/icons-react";
 import axios from "axios";
-import { doctorAgent } from "./DoctorAgentCard";
+import DoctorAgentCard, { doctorAgent } from "./DoctorAgentCard";
 import { Loader2 } from "lucide-react";
 
 function AddNewSessionDialog() {
@@ -23,6 +23,7 @@ function AddNewSessionDialog() {
   const [suggesteddoctors, setSuggestedDoctors] = useState<
     doctorAgent[] | undefined
   >(undefined);
+
   async function onClickNext() {
     setLoading(true);
     const result = await axios.post("/api/suggest_doctors", { notes: note });
@@ -32,10 +33,10 @@ function AddNewSessionDialog() {
   }
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button className="mt-3 cursor-pointer">+ Start a Consultation</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           {!suggesteddoctors ? (
             <DialogTitle>Add basic Details?</DialogTitle>
@@ -53,7 +54,13 @@ function AddNewSessionDialog() {
                 />
               </div>
             ) : (
-              <div></div>
+              <div className="max-w-5xl mx-auto">
+                <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+                  {suggesteddoctors.map((doctor, index) => (
+                    <DoctorAgentCard key={index} doctorAgent={doctor} />
+                  ))}
+                </div>
+              </div>
             )}
           </DialogDescription>
         </DialogHeader>

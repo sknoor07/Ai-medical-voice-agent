@@ -19,11 +19,12 @@ export async function POST(req: NextRequest) {
       ],
     });
     const rawResponse = completion?.choices[0]?.message?.content;
-    const res =
-      rawResponse &&
-      rawResponse.trim().replace("```json", "").replace("```", "");
-    const JSONRes = JSON.parse(res || "{}");
-    return NextResponse.json(JSONRes);
+    if (!rawResponse) {
+      return NextResponse.json({ doctors: [] });
+    }
+    const parsed = JSON.parse(rawResponse.replace(/```json|```/g, "").trim());
+
+    return NextResponse.json(parsed);
   } catch (error) {
     console.error("Error creating chat completion:", error);
     return NextResponse.json(error);
