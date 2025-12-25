@@ -40,6 +40,7 @@ function MedicalAgentSessionPage() {
   const [liveTranscipt, setLiveTranscript] = useState("");
   const [finalMessages, setFinalMessages] = useState<messages[]>([]);
   const [loading, setloading] = useState(false);
+  const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
   const fetchSessionData = async () => {
     const result = await axios.get("/api/session_chat", {
@@ -129,6 +130,13 @@ function MedicalAgentSessionPage() {
   }, [vapiInstance]);
 
   useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [finalMessages, liveTranscipt]);
+
+  useEffect(() => {
     if (!sessionId || Array.isArray(sessionId)) return;
     sessionId && fetchSessionData();
   }, [sessionId]);
@@ -171,6 +179,8 @@ function MedicalAgentSessionPage() {
                   <span>{message.text}</span>
                 </div>
               ))}
+              {/* Scroll anchor */}
+              <div ref={messagesEndRef} />
             </div>
 
             {liveTranscipt && (
@@ -184,10 +194,7 @@ function MedicalAgentSessionPage() {
           </div>
           <div>
             {!callStarted ? (
-              <Button
-                className=" mt-10 cursor-pointer ml-[20px]"
-                onClick={startCall}
-              >
+              <Button className=" mt-10 cursor-pointer " onClick={startCall}>
                 <PhoneCallIcon />
                 Start call
                 {!loading ? (
@@ -199,7 +206,7 @@ function MedicalAgentSessionPage() {
             ) : (
               <Button
                 variant={"destructive"}
-                className=" mt-10 cursor-pointer ml-[20px]"
+                className=" mt-10 cursor-pointer"
                 onClick={endCall}
               >
                 <PhoneOff />
