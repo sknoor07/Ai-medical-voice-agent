@@ -1,12 +1,13 @@
 import { UserButton } from "@clerk/nextjs";
 import { User } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import path from "path";
 import React from "react";
 
 function DashboardHeader() {
   const options = [
-    { id: 1, name: "Home", path: "/home" },
+    { id: 1, name: "Home", path: "/" },
     { id: 2, name: "History", path: "/history" },
     { id: 3, name: "Pricing", path: "/pricing" },
     { id: 4, name: "Profile", path: "/profile" },
@@ -18,9 +19,13 @@ function DashboardHeader() {
         {options.map((option, index) => {
           return (
             <div key={index}>
-              <h2 className="hover:font-bold font-stretch-50% transition-all">
+              <Link
+                key={option.id}
+                href={option.path}
+                className="cursor-pointer hover:font-bold transition-all"
+              >
                 {option.name}
-              </h2>
+              </Link>
             </div>
           );
         })}

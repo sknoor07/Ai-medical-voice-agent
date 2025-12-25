@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const users = await db
       .select()
       .from(usersTable)
-      //@ts-ignore
+      //@ts-expect-ignore
       .where(eq(usersTable.email, user?.primaryEmailAddress?.emailAddress));
 
     if (users?.length === 0) {

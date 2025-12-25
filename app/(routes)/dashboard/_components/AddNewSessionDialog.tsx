@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import axios from "axios";
 import DoctorAgentCard, { doctorAgent } from "./DoctorAgentCard";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 function AddNewSessionDialog() {
   const [note, setNote] = useState("");
@@ -25,11 +26,11 @@ function AddNewSessionDialog() {
   >(undefined);
 
   const [SelectedDoctor, setSelectedDoctor] = useState<doctorAgent>();
+  const router = useRouter();
 
   async function onClickNext() {
     setLoading(true);
     const result = await axios.post("/api/suggest_doctors", { notes: note });
-    console.log("Suggested Doctors:", result.data);
     setSuggestedDoctors(result.data);
     setLoading(false);
   }
@@ -43,8 +44,8 @@ function AddNewSessionDialog() {
       notes: note,
       selectedDoctor: SelectedDoctor,
     });
+    router.push("/dashboard/medical-agent/" + res.data[0].sessionId);
     setLoading(false);
-    console.log("New Session Created:", res.data);
   }
 
   return (
