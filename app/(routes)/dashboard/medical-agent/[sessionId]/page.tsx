@@ -3,7 +3,15 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { doctorAgent } from "../../_components/DoctorAgentCard";
-import { Circle, PhoneCall, PhoneCallIcon, PhoneOff } from "lucide-react";
+import {
+  ArrowRight,
+  Circle,
+  HeartPlus,
+  Loader2,
+  PhoneCall,
+  PhoneCallIcon,
+  PhoneOff,
+} from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/nextjs";
@@ -20,14 +28,18 @@ export type sessionDetail = {
   createdOn: string;
 };
 
+type messages = { role: string; text: string };
+
 function MedicalAgentSessionPage() {
   const { sessionId } = useParams();
   const [sessionDetails, setSessionDetails] = useState<sessionDetail>();
   const [callStarted, setCallSarted] = useState(false);
   const [callended, setCallEnded] = useState(false);
   const [vapiInstance, setVapiInstance] = useState<Vapi | null>(null);
-  const [currentRole, setCurrentRole] = useState("");
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [liveTranscipt, setLiveTranscript] = useState("");
+  const [finalMessages, setFinalMessages] = useState<messages[]>([]);
+  const [loading, setloading] = useState(false);
 
   const fetchSessionData = async () => {
     const result = await axios.get("/api/session_chat", {
@@ -51,12 +63,15 @@ function MedicalAgentSessionPage() {
 
   const handleMessage = (message: any) => {
     if (message.type === "transcript") {
-      const { role, trascriptType, transcript } = message;
+      const { role, transcriptType, transcript } = message;
       console.log(`${message.role}: ${message.transcript}`);
-      if (trascriptType === "partial") {
+      if (transcriptType == "partial") {
         setLiveTranscript(transcript);
         setCurrentRole(role);
-      } else {
+      } else if (transcriptType == "final") {
+        setFinalMessages((prev) => [...prev, { role: role, text: transcript }]);
+        setLiveTranscript("");
+        setCurrentRole(null);
       }
     }
   };
@@ -71,6 +86,7 @@ function MedicalAgentSessionPage() {
   };
 
   const startCall = () => {
+    setloading(true);
     if (vapiInstance) return; // prevent double start
 
     const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
@@ -78,19 +94,22 @@ function MedicalAgentSessionPage() {
     vapi.on("call-start", handleCallStart);
     vapi.on("call-end", handleCallEnd);
     vapi.on("message", handleMessage);
-    vapiInstance.on("speech-start", handleSpeechStart);
-    vapiInstance.on("speech-", handleSpeechEnd);
+    vapi.on("speech-start", handleSpeechStart);
+    vapi.on("speech-end", handleSpeechEnd);
 
     vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID!);
     setVapiInstance(vapi);
   };
 
   const endCall = () => {
+    setloading(false);
     if (!vapiInstance) return;
 
     vapiInstance.off("call-start", handleCallStart);
     vapiInstance.off("call-end", handleCallEnd);
     vapiInstance.off("message", handleMessage);
+    vapiInstance.off("speech-start", handleSpeechStart);
+    vapiInstance.off("speech-end", handleSpeechEnd);
 
     vapiInstance.stop();
     setVapiInstance(null);
@@ -139,18 +158,48 @@ function MedicalAgentSessionPage() {
             {sessionDetails.selectedDoctor.specialist}
           </h2>
           <p className=" text-sm  text-gray-400">AI Medical Voice Agent</p>
-          <div className="mt-30">
-            <h2 className="text-gray-400"> Assistant Msg...</h2>
-            <h2 className="text-lg"> User Msg...</h2>
+          <div className="mt-6 max-h-[200px] overflow-y-auto flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center px-10">
+              {finalMessages.map((message, index) => (
+                <div
+                  key={index}
+                  className="max-w-[90%] text-center bg-muted px-4 py-2 rounded-xl text-sm"
+                >
+                  <span className="block font-semibold capitalize mb-1">
+                    {message.role}
+                  </span>
+                  <span>{message.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {liveTranscipt && (
+              <div className="max-w-[90%] text-center bg-primary/10 px-4 py-2 rounded-xl">
+                <span className="block font-semibold capitalize mb-1">
+                  {currentRole}
+                </span>
+                <span>{liveTranscipt}</span>
+              </div>
+            )}
+          </div>
+          <div>
             {!callStarted ? (
-              <Button className=" mt-10 cursor-pointer" onClick={startCall}>
+              <Button
+                className=" mt-10 cursor-pointer ml-[20px]"
+                onClick={startCall}
+              >
                 <PhoneCallIcon />
                 Start call
+                {!loading ? (
+                  <ArrowRight />
+                ) : (
+                  <Loader2 className="animate-spin" />
+                )}
               </Button>
             ) : (
               <Button
                 variant={"destructive"}
-                className=" mt-10 cursor-pointer"
+                className=" mt-10 cursor-pointer ml-[20px]"
                 onClick={endCall}
               >
                 <PhoneOff />
