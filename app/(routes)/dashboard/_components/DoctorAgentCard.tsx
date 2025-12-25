@@ -17,13 +17,21 @@ export type doctorAgent = {
 function DoctorAgentCard({
   doctorAgent,
   onSelect,
+  startconversation,
+  selectdoctor,
 }: {
   doctorAgent: doctorAgent;
   onSelect?: (d: doctorAgent) => void;
+  startconversation?: () => void;
+  selectdoctor?: doctorAgent;
 }) {
   return (
     <div
-      className=" p-4 border rounded-2xl  hover:border-blue-500 shadow-lg transition-all cursor-pointer "
+      className={`p-4 border rounded-2xl  hover:border-blue-500 shadow-lg transition-all cursor-pointer ${
+        selectdoctor?.id === doctorAgent.id
+          ? "border-blue-500 shadow-cyan-500"
+          : ""
+      }`}
       onClick={() => onSelect?.(doctorAgent)}
     >
       <Image
@@ -37,10 +45,15 @@ function DoctorAgentCard({
       <p className="text-sm text-gray-600 line-clamp-2 mt-1">
         {doctorAgent.description}
       </p>
-      <Button className="mt-3 w-full cursor-pointer">
-        Consult Now
-        <IconArrowRight />
-      </Button>
+      {!onSelect && (
+        <Button
+          className="mt-3 w-full cursor-pointer"
+          onClick={() => startconversation?.()}
+        >
+          Consult Now
+          <IconArrowRight />
+        </Button>
+      )}
     </div>
   );
 }

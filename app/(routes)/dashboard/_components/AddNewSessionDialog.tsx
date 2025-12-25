@@ -33,11 +33,19 @@ function AddNewSessionDialog() {
     setSuggestedDoctors(result.data);
     setLoading(false);
   }
-  function startConsultation() {
+  async function startConsultation() {
     if (!SelectedDoctor) {
       alert("Please select a doctor to start the consultation.");
       return;
     }
+    setLoading(true);
+    const res = await axios.post("/api/session_chat", {
+      notes: note,
+      selectedDoctor: SelectedDoctor,
+    });
+    setLoading(false);
+    console.log("New Session Created:", res.data);
+  }
 
   return (
     <Dialog>
@@ -69,6 +77,8 @@ function AddNewSessionDialog() {
                       key={index}
                       doctorAgent={doctor}
                       onSelect={(d) => setSelectedDoctor(d)}
+                      startconversation={() => startConsultation()}
+                      selectdoctor={SelectedDoctor}
                     />
                   ))}
                 </div>
@@ -105,9 +115,15 @@ function AddNewSessionDialog() {
             <Button
               type="submit"
               className="cursor-pointer"
+              disabled={loading || !SelectedDoctor}
               onClick={() => startConsultation()}
             >
               Start Consultation
+              {loading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <IconArrowRight />
+              )}
             </Button>
           )}
         </DialogFooter>
