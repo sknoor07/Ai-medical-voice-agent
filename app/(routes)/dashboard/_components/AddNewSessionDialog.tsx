@@ -24,6 +24,8 @@ function AddNewSessionDialog() {
     doctorAgent[] | undefined
   >(undefined);
 
+  const [SelectedDoctor, setSelectedDoctor] = useState<doctorAgent>();
+
   async function onClickNext() {
     setLoading(true);
     const result = await axios.post("/api/suggest_doctors", { notes: note });
@@ -31,6 +33,12 @@ function AddNewSessionDialog() {
     setSuggestedDoctors(result.data);
     setLoading(false);
   }
+  function startConsultation() {
+    if (!SelectedDoctor) {
+      alert("Please select a doctor to start the consultation.");
+      return;
+    }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -57,7 +65,11 @@ function AddNewSessionDialog() {
               <div className="max-w-5xl mx-auto">
                 <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
                   {suggesteddoctors.map((doctor, index) => (
-                    <DoctorAgentCard key={index} doctorAgent={doctor} />
+                    <DoctorAgentCard
+                      key={index}
+                      doctorAgent={doctor}
+                      onSelect={(d) => setSelectedDoctor(d)}
+                    />
                   ))}
                 </div>
               </div>
@@ -90,7 +102,11 @@ function AddNewSessionDialog() {
               )}
             </Button>
           ) : (
-            <Button type="submit" className="cursor-pointer">
+            <Button
+              type="submit"
+              className="cursor-pointer"
+              onClick={() => startConsultation()}
+            >
               Start Consultation
             </Button>
           )}

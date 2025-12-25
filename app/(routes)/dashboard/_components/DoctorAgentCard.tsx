@@ -14,9 +14,18 @@ export type doctorAgent = {
   subscriptionRequired: boolean;
 };
 
-function DoctorAgentCard({ doctorAgent }: { doctorAgent: doctorAgent }) {
+function DoctorAgentCard({
+  doctorAgent,
+  onSelect,
+}: {
+  doctorAgent: doctorAgent;
+  onSelect?: (d: doctorAgent) => void;
+}) {
   return (
-    <div className=" p-4 border rounded-2xl  hover:border-blue-500 shadow-lg transition-all cursor-pointer ">
+    <div
+      className=" p-4 border rounded-2xl  hover:border-blue-500 shadow-lg transition-all cursor-pointer "
+      onClick={() => onSelect?.(doctorAgent)}
+    >
       <Image
         src={doctorAgent.image}
         alt={doctorAgent.specialist}
