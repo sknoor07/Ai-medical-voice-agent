@@ -19,6 +19,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import Vapi from "@vapi-ai/web";
 import type { CreateAssistantDTO } from "vapi";
 import { useRouter } from "next/router";
+import { toast } from "sonner";
 
 export type sessionDetail = {
   id: number;
@@ -157,6 +158,7 @@ function MedicalAgentSessionPage() {
     setCallEnded(true);
     const result = await generateReport();
     setloading(false);
+    toast.success("Your Report Generated Successfully");
     router.replace("/dashboard");
   };
 
