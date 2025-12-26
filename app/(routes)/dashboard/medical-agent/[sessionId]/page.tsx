@@ -15,9 +15,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import Vapi from "@vapi-ai/web";
 import type { CreateAssistantDTO } from "vapi";
+import { useRouter } from "next/router";
 
 export type sessionDetail = {
   id: number;
@@ -33,6 +34,7 @@ export type sessionDetail = {
 type messages = { role: string; text: string };
 
 function MedicalAgentSessionPage() {
+  const { user } = useUser();
   const { sessionId } = useParams();
   const [sessionDetails, setSessionDetails] = useState<sessionDetail>();
   const [callStarted, setCallSarted] = useState(false);
@@ -43,6 +45,7 @@ function MedicalAgentSessionPage() {
   const [finalMessages, setFinalMessages] = useState<messages[]>([]);
   const [loading, setloading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
 
   const fetchSessionData = async () => {
     const result = await axios.get("/api/session_chat", {
@@ -55,6 +58,7 @@ function MedicalAgentSessionPage() {
   const handleCallStart = () => {
     console.log("Call started");
     setCallSarted(true);
+    setloading(false);
     setCallEnded(false);
   };
 
@@ -128,6 +132,7 @@ function MedicalAgentSessionPage() {
     vapi.on("message", handleMessage);
     vapi.on("speech-start", handleSpeechStart);
     vapi.on("speech-end", handleSpeechEnd);
+
     vapi.on("error", (err) => {
       console.error("Vapi error:", err);
       setloading(false);
@@ -137,8 +142,7 @@ function MedicalAgentSessionPage() {
     setVapiInstance(vapi);
   };
 
-  const endCall = () => {
-    setloading(false);
+  const endCall = async () => {
     if (!vapiInstance) return;
 
     vapiInstance.off("call-start", handleCallStart);
@@ -151,6 +155,20 @@ function MedicalAgentSessionPage() {
     setVapiInstance(null);
     setCallSarted(false);
     setCallEnded(true);
+    const result = await generateReport();
+    setloading(false);
+    router.replace("/dashboard");
+  };
+
+  const generateReport = async () => {
+    const result = await axios.post("/api/medical-report", {
+      messages: finalMessages,
+      sessioninfo: sessionDetails,
+      sessionid: sessionId,
+      username: user?.username,
+    });
+    console.log("report data: ", result.data);
+    return result.data;
   };
 
   useEffect(() => {
@@ -175,6 +193,7 @@ function MedicalAgentSessionPage() {
     if (!sessionId || Array.isArray(sessionId)) return;
     sessionId && fetchSessionData();
   }, [sessionId]);
+
   return (
     <div className=" p-5 border rounded-3xl bg-secondary transition-all">
       <div className="flex justify-between items-center ">
@@ -229,7 +248,11 @@ function MedicalAgentSessionPage() {
           </div>
           <div>
             {!callStarted ? (
-              <Button className=" mt-10 cursor-pointer " onClick={startCall}>
+              <Button
+                className=" mt-10 cursor-pointer "
+                onClick={startCall}
+                disabled={loading}
+              >
                 <PhoneCallIcon />
                 Start call
                 {!loading ? (
@@ -243,9 +266,15 @@ function MedicalAgentSessionPage() {
                 variant={"destructive"}
                 className=" mt-10 cursor-pointer"
                 onClick={endCall}
+                disabled={loading}
               >
                 <PhoneOff />
                 Disconnect
+                {!loading ? (
+                  <ArrowRight />
+                ) : (
+                  <Loader2 className="animate-spin" />
+                )}
               </Button>
             )}
           </div>
