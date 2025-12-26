@@ -4,9 +4,11 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import AddNewSessionDialog from "./AddNewSessionDialog";
 import axios from "axios";
+import HistoryTable from "./HistoryTable";
+import { sessionDetail } from "../medical-agent/[sessionId]/page";
 
 function HistoryList() {
-  const [historyList, setHistoryList] = React.useState([]);
+  const [historyList, setHistoryList] = React.useState<sessionDetail[]>([]);
   const getHistoryList = async () => {
     const result = await axios.get("/api/session_chat", {
       params: { sessionId: "all" },
@@ -33,7 +35,9 @@ function HistoryList() {
           <AddNewSessionDialog />
         </div>
       ) : (
-        <div>List</div>
+        <div>
+          <HistoryTable allHistoryList={historyList} />
+        </div>
       )}
     </div>
   );
