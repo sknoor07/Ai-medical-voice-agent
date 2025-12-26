@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { sessionChatTable } from "@/config/schema";
 import { v4 as uuidv4 } from "uuid";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { json } from "drizzle-orm/pg-core";
+import { useUser } from "@clerk/nextjs";
 
 export async function POST(request: NextRequest) {
   const { notes, selectedDoctor } = await request.json();
@@ -37,18 +38,32 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("sessionId");
+    const user = await currentUser();
     if (!sessionId) {
       return NextResponse.json(
         { error: "sessionId is required" },
         { status: 400 }
       );
     }
-    const sessions = await db
-      .select()
-      .from(sessionChatTable)
-      .where(eq(sessionChatTable.sessionId, sessionId));
-
-    return NextResponse.json(sessions[0]);
+    if (sessionId == "all") {
+      const sessions = await db
+        .select()
+        .from(sessionChatTable)
+        .where(
+          eq(
+            sessionChatTable.createdBy,
+            user?.primaryEmailAddress?.emailAddress
+          )
+        )
+        .orderBy(desc(sessionChatTable.id));
+      return NextResponse.json(sessions);
+    } else {
+      const sessions = await db
+        .select()
+        .from(sessionChatTable)
+        .where(eq(sessionChatTable.sessionId, sessionId));
+      return NextResponse.json(sessions[0]);
+    }
   } catch (error) {
     console.error("Error fetching sessions:", error);
     return NextResponse.json(

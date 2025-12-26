@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { doctorAgent } from "../../_components/DoctorAgentCard";
 import {
@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Vapi from "@vapi-ai/web";
 import type { CreateAssistantDTO } from "vapi";
-import { useRouter } from "next/router";
+
 import { toast } from "sonner";
 
 export type sessionDetail = {

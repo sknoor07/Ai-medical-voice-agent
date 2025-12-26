@@ -1,11 +1,23 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import AddNewSessionDialog from "./AddNewSessionDialog";
+import axios from "axios";
 
 function HistoryList() {
   const [historyList, setHistoryList] = React.useState([]);
+  const getHistoryList = async () => {
+    const result = await axios.get("/api/session_chat", {
+      params: { sessionId: "all" },
+    });
+    console.log("history: ", result.data);
+    setHistoryList(result.data);
+  };
+
+  useEffect(() => {
+    getHistoryList();
+  }, []);
   return (
     <div>
       {historyList.length === 0 ? (
