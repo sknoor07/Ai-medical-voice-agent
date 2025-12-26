@@ -4,6 +4,7 @@ import { sessionChatTable } from "@/config/schema";
 import { v4 as uuidv4 } from "uuid";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
+import { json } from "drizzle-orm/pg-core";
 
 export async function POST(request: NextRequest) {
   const { notes, selectedDoctor } = await request.json();

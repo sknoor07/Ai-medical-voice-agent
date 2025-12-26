@@ -7,6 +7,7 @@ import {
   ArrowRight,
   Circle,
   HeartPlus,
+  Languages,
   Loader2,
   PhoneCall,
   PhoneCallIcon,
@@ -16,6 +17,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/nextjs";
 import Vapi from "@vapi-ai/web";
+import type { CreateAssistantDTO } from "vapi";
 
 export type sessionDetail = {
   id: number;
@@ -87,18 +89,51 @@ function MedicalAgentSessionPage() {
   };
 
   const startCall = () => {
-    setloading(true);
     if (vapiInstance) return; // prevent double start
+    console.log(sessionDetails?.selectedDoctor.voiceId);
+
+    if (!sessionDetails?.selectedDoctor?.voiceId) {
+      console.error("Session not ready");
+      return;
+    }
+
+    setloading(true);
 
     const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+
+    const voiceAgentConfig: CreateAssistantDTO = {
+      name: "AI Medical Voice Agent",
+      firstMessage:
+        "Hi there! I'm Your AI Medical Voice assistant. I am here to help you with health questions or conserns you might have today.How are you feeling today?",
+      transcriber: { provider: "assembly-ai", language: "en" },
+      voice: {
+        provider: "vapi",
+        voiceId: sessionDetails.selectedDoctor.voiceId,
+      },
+
+      model: {
+        provider: "openai",
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: sessionDetails?.selectedDoctor?.agentPrompt,
+          },
+        ],
+      },
+    };
 
     vapi.on("call-start", handleCallStart);
     vapi.on("call-end", handleCallEnd);
     vapi.on("message", handleMessage);
     vapi.on("speech-start", handleSpeechStart);
     vapi.on("speech-end", handleSpeechEnd);
+    vapi.on("error", (err) => {
+      console.error("Vapi error:", err);
+      setloading(false);
+    });
 
-    vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID!);
+    vapi.start(voiceAgentConfig);
     setVapiInstance(vapi);
   };
 
@@ -180,7 +215,6 @@ function MedicalAgentSessionPage() {
                 </div>
               ))}
               {/* Scroll anchor */}
-              <div ref={messagesEndRef} />
             </div>
 
             {liveTranscipt && (
@@ -189,6 +223,7 @@ function MedicalAgentSessionPage() {
                   {currentRole}
                 </span>
                 <span>{liveTranscipt}</span>
+                <div ref={messagesEndRef} />
               </div>
             )}
           </div>
