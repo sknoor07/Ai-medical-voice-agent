@@ -17,7 +17,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Vapi from "@vapi-ai/web";
-import type { CreateAssistantDTO } from "vapi";
+import type { CreateAssistantDTO } from "@vapi-ai/web";
 
 import { toast } from "sonner";
 
@@ -120,7 +120,7 @@ function MedicalAgentSessionPage() {
 
     const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
 
-    const voiceAgentConfig: CreateAssistantDTO = {
+    const voiceAgentConfig = {
       name: "AI Medical Voice Agent",
       firstMessage:
         "Hi there! I'm Your AI Medical Voice assistant. I am here to help you with health questions or conserns you might have today.How are you feeling today?",
@@ -153,6 +153,7 @@ function MedicalAgentSessionPage() {
       setloading(false);
     });
 
+    //@ts-ignore
     vapi.start(voiceAgentConfig);
     setVapiInstance(vapi);
   };
