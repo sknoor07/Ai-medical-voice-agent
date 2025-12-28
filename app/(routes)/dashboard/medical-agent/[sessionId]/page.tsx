@@ -17,8 +17,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Vapi from "@vapi-ai/web";
-import type { CreateAssistantDTO } from "@vapi-ai/web";
-
 import { toast } from "sonner";
 
 export type SessionReport = {
