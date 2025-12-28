@@ -95,12 +95,12 @@ function MedicalAgentSessionPage() {
 
   const startCall = () => {
     if (vapiInstance) return; // prevent double start
-    console.log(sessionDetails?.selectedDoctor.voiceId);
+    console.log(sessionDetails?.selectedDoctor?.voiceId);
 
-    if (!sessionDetails?.selectedDoctor?.voiceId) {
-      console.error("Session not ready");
-      return;
-    }
+    // if (!sessionDetails?.selectedDoctor?.voiceId) {
+    //   console.error("Session not ready");
+    //   return;
+    // }
 
     setloading(true);
 
@@ -113,7 +113,7 @@ function MedicalAgentSessionPage() {
       transcriber: { provider: "assembly-ai", language: "en" },
       voice: {
         provider: "vapi",
-        voiceId: sessionDetails.selectedDoctor.voiceId,
+        voiceId: sessionDetails?.selectedDoctor?.voiceId,
       },
 
       model: {

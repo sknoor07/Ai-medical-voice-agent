@@ -14,7 +14,19 @@ export async function POST(req: NextRequest) {
           content:
             "User Notes/ Symptoms:" +
             notes +
-            "Depends on user notes and symptoms. please suggest list of doctors from the provided list, Return the response as Array of Objects in JSON format only  ",
+            `Depends on user notes and symptoms. please suggest list of doctors from the provided list, Return the response as Array of Objects in JSON format only  
+            Return the result in this JSON format:
+{
+  "id": number,
+  "specialist": "string",
+  "description": "string",
+  "image": "string",
+  "agentPrompt": "string",
+  "voiceId": "string",
+  "subscriptionRequired": boolean,
+  "reason":"string",
+}
+            `,
         },
       ],
     });
