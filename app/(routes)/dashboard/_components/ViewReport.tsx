@@ -106,7 +106,7 @@ function ViewReport({ entryhistory }: Props) {
                   </h2>
                   <hr className="border-t-2 border-blue-500 mb-4" />
                   <ul className="list-disc list-inside space-y-1">
-                    {entryhistory?.report?.medicationsMentioned?.length > 0 ? (
+                    {entryhistory?.report?.medicationsMentioned?.length ? (
                       entryhistory.report.medicationsMentioned.map(
                         (sym, index) => <li key={index}>{sym}</li>
                       )
