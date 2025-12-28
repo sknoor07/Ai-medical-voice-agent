@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
         .select()
         .from(sessionChatTable)
         .where(
+          //@ts-ignore
           eq(
             sessionChatTable.createdBy,
             user?.primaryEmailAddress?.emailAddress
