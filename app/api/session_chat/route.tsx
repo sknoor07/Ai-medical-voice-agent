@@ -45,12 +45,15 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
+    const email = user?.primaryEmailAddress?.emailAddress;
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     if (sessionId == "all") {
       const sessions = await db
         .select()
         .from(sessionChatTable)
         .where(
-          //@ts-ignore
           eq(
             sessionChatTable.createdBy,
             user?.primaryEmailAddress?.emailAddress
