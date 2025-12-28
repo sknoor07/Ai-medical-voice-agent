@@ -21,13 +21,27 @@ import type { CreateAssistantDTO } from "vapi";
 
 import { toast } from "sonner";
 
+export type SessionReport = {
+  sessionId: string;
+  agent: string;
+  user: string;
+  timestamp: string; // ISO date string
+  chiefComplaint: string;
+  summary: string;
+  symptoms: string[];
+  duration: string;
+  severity: string;
+  medicationsMentioned: string[];
+  recommendations: string[];
+};
+
 export type sessionDetail = {
   id: number;
   sessionId: string;
   notes: string;
   selectedDoctor: doctorAgent;
   conversation: "";
-  report: JSON;
+  report: SessionReport | null;
   createdBy: string;
   createdOn: string;
 };
