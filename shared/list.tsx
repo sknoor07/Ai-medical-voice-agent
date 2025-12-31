@@ -7,7 +7,7 @@ export const AIDoctorAgents = [
     agentPrompt:
       "You are a cheerful Surgeon. Ask about the disease or injury issue and give quick, calming suggestions.",
 
-    subscriptionRequired: false,
+    subscriptionRequired: true,
     voiceId: "Tara",
   },
   {
