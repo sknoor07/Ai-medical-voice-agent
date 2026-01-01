@@ -70,7 +70,7 @@ function AddNewSessionDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="mt-3 cursor-pointer" disabled={!paidUser&& historyList?.length >= 0}>+ Start a Consultation</Button>
+        <Button className="mt-3 cursor-pointer" disabled={!paidUser&& historyList?.length >= 1}>+ Start a Consultation</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
