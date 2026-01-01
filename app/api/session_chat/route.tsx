@@ -76,3 +76,39 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get("sessionId");
+    const user = await currentUser();
+    
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: "sessionId is required" },
+        { status: 400 }
+      );
+    }
+    
+    // Safety check: ensure only the creator can delete their session
+    const email = user?.primaryEmailAddress?.emailAddress;
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const result = await db
+      .delete(sessionChatTable)
+      .where(
+        eq(sessionChatTable.sessionId, sessionId)
+      )
+      .returning();
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("Error deleting session:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

@@ -56,6 +56,7 @@ function MedicalAgentSessionPage() {
   const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [liveTranscipt, setLiveTranscript] = useState("");
   const [finalMessages, setFinalMessages] = useState<messages[]>([]);
+  const callHasStartedRef = React.useRef(false); // Ref to track call start across closures
   const [loading, setloading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -71,6 +72,7 @@ function MedicalAgentSessionPage() {
   const handleCallStart = () => {
     console.log("Call started");
     setCallSarted(true);
+    callHasStartedRef.current = true;
     setloading(false);
     setCallEnded(false);
   };
@@ -169,10 +171,15 @@ function MedicalAgentSessionPage() {
     setVapiInstance(null);
     setCallSarted(false);
     setCallEnded(true);
-    const result = await generateReport();
-    setloading(false);
-    toast.success("Your Report Generated Successfully");
+    if(callStarted){
+      const result = await generateReport();
+      toast.success("Your Report Generated Successfully");
+      
+    
     router.replace("/dashboard");
+    }
+    setloading(false);
+    
   };
 
   const generateReport = async () => {
@@ -204,9 +211,27 @@ function MedicalAgentSessionPage() {
     });
   }, [finalMessages, liveTranscipt]);
 
+  const cleanupTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (!sessionId || Array.isArray(sessionId)) return;
+    
+    // If we are remounting (e.g. Strict Mode), cancel the pending deletion
+    if (cleanupTimerRef.current) {
+      clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = null;
+    }
+
     sessionId && fetchSessionData();
+
+    return () => {
+      if (!callHasStartedRef.current) {
+        // Debounce deletion to allow for Strict Mode remounting or quick navigation back
+        cleanupTimerRef.current = setTimeout(() => {
+           axios.delete(`/api/session_chat?sessionId=${sessionId}`).catch(e => console.error("Cleanup failed", e));
+        }, 1000);
+      }
+    };
   }, [sessionId]);
 
   return (

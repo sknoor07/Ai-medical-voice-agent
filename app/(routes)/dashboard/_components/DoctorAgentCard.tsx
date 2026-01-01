@@ -54,7 +54,12 @@ function DoctorAgentCard({
       params: { sessionId: "all" },
     });
     console.log("history: ", result.data);
-    setHistoryList(result.data);
+    // Filter out sessions that are empty (no report or conversation data)
+    const validSessions = result.data.filter((item: any) => 
+      (item.report && Object.keys(item.report).length > 0) || 
+      (item.conversation && Object.keys(item.conversation).length > 0)
+    );
+    setHistoryList(validSessions);
   };
 
   useEffect(() => {
