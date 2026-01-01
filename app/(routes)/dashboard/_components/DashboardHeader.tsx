@@ -10,7 +10,7 @@ function DashboardHeader() {
     { id: 1, name: "Home", path: "/" },
     { id: 2, name: "History", path: "/dashboard/history" },
     { id: 3, name: "Pricing", path: "/dashboard/billing" },
-    { id: 4, name: "Profile", path: "/profile" },
+    { id: 4, name: "Profile", path: "/dashboard/profile" },
   ];
   return (
     <div className="flex  items-center justify-between px-5 py-4 border-b shadow  md:px-20 lg:px-40">

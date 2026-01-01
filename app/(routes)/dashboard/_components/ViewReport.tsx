@@ -20,7 +20,7 @@ function ViewReport({ entryhistory }: Props) {
   return (
     <div>
       <Dialog>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button variant={"link"} className="cursor-pointer" size={"sm"}>
             View Report
           </Button>
