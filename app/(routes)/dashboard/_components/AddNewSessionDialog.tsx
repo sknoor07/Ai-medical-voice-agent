@@ -97,7 +97,6 @@ function AddNewSessionDialog() {
                       key={index}
                       doctorAgent={doctor}
                       onSelect={(d) => setSelectedDoctor(d)}
-                      startconversation={() => startConsultation()}
                       selectdoctor={SelectedDoctor}
                     />
                   ))}

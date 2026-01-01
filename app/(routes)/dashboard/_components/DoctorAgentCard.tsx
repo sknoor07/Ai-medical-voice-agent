@@ -4,8 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@clerk/nextjs";
 import { IconArrowRight } from "@tabler/icons-react";
+import axios from "axios";
 import Image from "next/image";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { sessionDetail } from "../medical-agent/[sessionId]/page";
+import { Loader2 } from "lucide-react";
+
 
 export type doctorAgent = {
   id: number;
@@ -20,16 +25,42 @@ export type doctorAgent = {
 function DoctorAgentCard({
   doctorAgent,
   onSelect,
-  startconversation,
   selectdoctor,
+
 }: {
   doctorAgent: doctorAgent;
   onSelect?: (d: doctorAgent) => void;
-  startconversation?: () => void;
   selectdoctor?: doctorAgent;
+
 }) {
+  const [loading, setLoading] = useState(false);
   const {has}= useAuth();
   const paidUser = has?.({ plan: 'pro_user' })
+  const router = useRouter();
+   const [historyList, setHistoryList] = React.useState<sessionDetail[]>([]);
+
+  async function startConsultation() {
+    setLoading(true);
+    const res = await axios.post("/api/session_chat", {
+      notes: "New Conversation",
+      selectedDoctor: doctorAgent,
+    });
+    router.push("/dashboard/medical-agent/" + res.data[0].sessionId);
+    setLoading(false);
+  }
+
+  const getHistoryList = async () => {
+    const result = await axios.get("/api/session_chat", {
+      params: { sessionId: "all" },
+    });
+    console.log("history: ", result.data);
+    setHistoryList(result.data);
+  };
+
+  useEffect(() => {
+    getHistoryList();
+  }, []);
+
   return (
     <div
       className={`relative p-4 border rounded-2xl hover:border-blue-500 shadow-lg transition-all cursor-pointer ${
@@ -57,16 +88,31 @@ function DoctorAgentCard({
         {doctorAgent.description}
       </p>
 
-      {(
+      {(!paidUser&&historyList?.length>=1)?(
         <Button
           className="mt-3 w-full cursor-pointer"
-          onClick={() => startconversation?.()}
-          disabled={!paidUser && doctorAgent.subscriptionRequired}
+          disabled={true}
+          onClick={()=>startConsultation()}
         >
           Consult Now
-          <IconArrowRight />
+          {loading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <IconArrowRight />
+              )}
         </Button>
-      )}
+      ):<Button
+          className="mt-3 w-full cursor-pointer"
+          disabled={!paidUser && doctorAgent.subscriptionRequired}
+          onClick={()=>startConsultation()}
+        >
+          Consult Now
+          {loading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <IconArrowRight />
+              )}
+        </Button>}
     </div>
   );
 }
