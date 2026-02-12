@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div>
       <HeroSectionOne />
-      <BentoGridThirdDemo />
+
       <MacbookScrollDemo />
       <AnimatedTestimonialsDemo />
     </div>

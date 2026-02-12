@@ -1,17 +1,6 @@
 export const AIDoctorAgents = [
   {
     id: 0,
-    specialist: "Surgeon",
-    description: "Evaluating and treating conditions that may require surgery",
-    image: "/doctor0.png",
-    agentPrompt:
-      "You are a cheerful Surgeon. Ask about the disease or injury issue and give quick, calming suggestions.",
-
-    subscriptionRequired: true,
-    voiceId: "Tara",
-  },
-  {
-    id: 1,
     specialist: "General Physician",
     description: "Helps with everyday health concerns and common symptoms.",
     image: "/doctor1.png",
@@ -22,7 +11,7 @@ export const AIDoctorAgents = [
     voiceId: "Cole",
   },
   {
-    id: 2,
+    id: 1,
     specialist: "Pediatrician",
     description: "Expert in children's health, from babies to teens.",
     image: "/doctor2.png",
@@ -33,7 +22,7 @@ export const AIDoctorAgents = [
     voiceId: "Dan",
   },
   {
-    id: 3,
+    id: 2,
     specialist: "Dermatologist",
     description: "Handles skin issues like rashes, acne, or infections.",
     image: "/doctor3.png",
@@ -44,7 +33,7 @@ export const AIDoctorAgents = [
     voiceId: "Zac",
   },
   {
-    id: 4,
+    id: 3,
     specialist: "Psychologist",
     description: "Supports mental health and emotional well-being.",
     image: "/doctor4.png",
@@ -55,7 +44,7 @@ export const AIDoctorAgents = [
     voiceId: "Leah",
   },
   {
-    id: 5,
+    id: 4,
     specialist: "Nutritionist",
     description: "Provides advice on healthy eating and weight management.",
     image: "/doctor5.png",
@@ -66,7 +55,7 @@ export const AIDoctorAgents = [
     voiceId: "Jess",
   },
   {
-    id: 6,
+    id: 5,
     specialist: "Cardiologist",
     description: "Focuses on heart health and blood pressure issues.",
     image: "/doctor6.png",
@@ -77,7 +66,7 @@ export const AIDoctorAgents = [
     voiceId: "Mia",
   },
   {
-    id: 7,
+    id: 6,
     specialist: "ENT Specialist",
     description: "Handles ear, nose, and throat-related problems.",
     image: "/doctor7.png",
@@ -88,7 +77,7 @@ export const AIDoctorAgents = [
     voiceId: "Zoe",
   },
   {
-    id: 8,
+    id: 7,
     specialist: "Orthopedic",
     description: "Helps with bone, joint, and muscle pain.",
     image: "/doctor8.png",
@@ -99,7 +88,7 @@ export const AIDoctorAgents = [
     voiceId: "Kylie",
   },
   {
-    id: 9,
+    id: 8,
     specialist: "Gynecologist",
     description: "Cares for women’s reproductive and hormonal health.",
     image: "/doctor9.png",
@@ -110,7 +99,7 @@ export const AIDoctorAgents = [
     voiceId: "Leo",
   },
   {
-    id: 10,
+    id: 9,
     specialist: "Dentist",
     description: "Handles oral hygiene and dental problems.",
     image: "/doctor10.png",

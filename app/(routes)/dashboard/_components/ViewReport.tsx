@@ -64,7 +64,7 @@ function ViewReport({ entryhistory }: Props) {
                     Chief Complaint
                   </h2>
                   <hr className="border-t-2 border-blue-500 mb-4" />
-                  <p>{entryhistory.notes}</p>
+                  <p>{entryhistory.report?.chiefComplaint}</p>
                 </div>
                 <div className="mt-10">
                   <h2 className="font-bold text-blue-500 text-lg">Summary</h2>

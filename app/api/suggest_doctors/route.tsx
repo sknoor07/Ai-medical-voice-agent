@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   const { notes } = await req.json();
   try {
     const completion = await openai.chat.completions.create({
-      model: "xiaomi/mimo-v2-flash:free",
+      model: "arcee-ai/trinity-large-preview:free",
       messages: [
         { role: "system", content: JSON.stringify(AIDoctorAgents) },
         {

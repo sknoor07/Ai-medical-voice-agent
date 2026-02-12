@@ -46,7 +46,7 @@ Only include valid fields. Respond with nothing else.
       ", Converstaion: " +
       JSON.stringify(messages);
     const completion = await openai.chat.completions.create({
-      model: "xiaomi/mimo-v2-flash:free",
+      model: "arcee-ai/trinity-large-preview:free",
       messages: [
         { role: "system", content: REPORT_GENERATION_PROMPT },
         {
