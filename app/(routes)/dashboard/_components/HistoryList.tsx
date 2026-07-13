@@ -9,7 +9,11 @@ import { sessionDetail } from "../medical-agent/[sessionId]/page";
 import { motion } from "framer-motion";
 import { Clock, FileText } from "lucide-react";
 
-function HistoryList() {
+type Props = {
+  showAll?: boolean;
+};
+
+function HistoryList({ showAll }: Props) {
   const [historyList, setHistoryList] = useState<sessionDetail[]>([]);
 
   const getHistoryList = async () => {
@@ -38,7 +42,7 @@ function HistoryList() {
           <h2 className="text-xl font-bold">Recent History</h2>
         </div>
         <span className="text-sm text-gray-500">
-          Showing {Math.min(historyList.length, 5)} of {historyList.length} consultations
+          Showing {showAll ? historyList.length : Math.min(historyList.length, 5)} of {historyList.length} consultations
         </span>
       </div>
 
@@ -57,7 +61,9 @@ function HistoryList() {
         </div>
       ) : (
         <div className="rounded-3xl bg-[#111118]/80 border border-gray-800 backdrop-blur-sm overflow-hidden">
-          <HistoryTable allHistoryList={historyList.slice(0, 5)} />
+          <HistoryTable
+            allHistoryList={showAll ? historyList : historyList.slice(0, 5)}
+          />
         </div>
       )}
     </motion.div>

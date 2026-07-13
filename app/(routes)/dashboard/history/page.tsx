@@ -29,7 +29,7 @@ function HistoryPage() {
             </p>
           </div>
         </motion.div>
-        <HistoryList />
+        <HistoryList showAll />
       </div>
     </div>
   );
