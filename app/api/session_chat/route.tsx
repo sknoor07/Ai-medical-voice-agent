@@ -61,15 +61,14 @@ export async function GET(request: NextRequest) {
     }
     const email = user?.primaryEmailAddress?.emailAddress;
     if (sessionId == "all") {
+      if (!email) {
+        return NextResponse.json([], { status: 200 });
+      }
+
       const sessions = await db
         .select()
         .from(sessionChatTable)
-        .where(
-          eq(
-            sessionChatTable.createdBy,
-            user?.primaryEmailAddress?.emailAddress
-          )
-        )
+        .where(eq(sessionChatTable.createdBy, email))
         .orderBy(desc(sessionChatTable.id));
       return NextResponse.json(sessions);
     } else {
@@ -110,7 +109,7 @@ export async function DELETE(request: NextRequest) {
     const result = await db
       .delete(sessionChatTable)
       .where(
-        eq(sessionChatTable.sessionId, sessionId)
+        eq(sessionChatTable?.sessionId, sessionId)
       )
       .returning();
 
