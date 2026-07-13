@@ -1,5 +1,6 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { IconArrowRight } from "@tabler/icons-react";
+import { ArrowRight, Loader2, Plus, Sparkles } from "lucide-react";
 import axios from "axios";
 import DoctorAgentCard, { doctorAgent } from "./DoctorAgentCard";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { sessionDetail } from "../medical-agent/[sessionId]/page";
@@ -23,16 +23,12 @@ import { sessionDetail } from "../medical-agent/[sessionId]/page";
 function AddNewSessionDialog() {
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
-  const [suggesteddoctors, setSuggestedDoctors] = useState<
-    doctorAgent[] | undefined
-  >(undefined);
-
+  const [suggesteddoctors, setSuggestedDoctors] = useState<doctorAgent[] | undefined>(undefined);
   const [SelectedDoctor, setSelectedDoctor] = useState<doctorAgent>();
   const router = useRouter();
-  const {has}= useAuth();
-  const paidUser = has?.({ plan: 'pro_user' })
-  const [historyList, setHistoryList] = React.useState<sessionDetail[]>([]);
-
+  const { has } = useAuth();
+  const paidUser = has?.({ plan: "pro_user" });
+  const [historyList, setHistoryList] = useState<sessionDetail[]>([]);
 
   const getHistoryList = async () => {
     const result = await axios.get("/api/session_chat", {
@@ -53,6 +49,7 @@ function AddNewSessionDialog() {
     setSuggestedDoctors(result.data);
     setLoading(false);
   }
+
   async function startConsultation() {
     if (!SelectedDoctor) {
       alert("Please select a doctor to start the consultation.");
@@ -70,28 +67,41 @@ function AddNewSessionDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="mt-3 cursor-pointer" disabled={!paidUser&& historyList?.length >= 1}>+ Start a Consultation</Button>
+        <Button
+          className="rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all hover:scale-105 flex items-center gap-2 will-change-transform"
+          disabled={!paidUser && historyList?.length >= 1}
+        >
+          <Plus className="w-4 h-4" />
+          Start Consultation
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[85vh] overflow-y-auto bg-[#111118] border-gray-800 text-white">
         <DialogHeader>
           {!suggesteddoctors ? (
-            <DialogTitle>Add basic Details?</DialogTitle>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-cyan-400" />
+              Describe Your Symptoms
+            </DialogTitle>
           ) : (
-            <DialogTitle>Suggested Doctors</DialogTitle>
+            <DialogTitle className="text-xl font-bold">
+              Recommended Specialists
+            </DialogTitle>
           )}
-          <DialogDescription asChild>
+          <DialogDescription asChild className="text-gray-400">
             {!suggesteddoctors ? (
-              <div>
-                <h2> Add Symptoms or Any Other Details</h2>
+              <div className="mt-4">
+                <p className="text-sm text-gray-400 mb-3">
+                  Tell us about your symptoms or health concerns. Our AI will match you with the best specialist.
+                </p>
                 <Textarea
-                  placeholder="Type here..."
-                  className=" h-[200px] w-full mt-3"
+                  placeholder="e.g., I've been experiencing headaches and dizziness for the past 3 days..."
+                  className="h-[160px] w-full bg-[#0a0a0f] border-gray-700 text-white placeholder:text-gray-600 focus:border-cyan-500/50 focus:ring-cyan-500/20 rounded-xl resize-none"
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>
             ) : (
-              <div className="max-w-5xl mx-auto">
-                <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+              <div className="max-w-5xl mx-auto mt-4">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                   {suggesteddoctors.map((doctor, index) => (
                     <DoctorAgentCard
                       key={index}
@@ -105,13 +115,12 @@ function AddNewSessionDialog() {
             )}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <DialogClose asChild>
             <Button
               variant="outline"
-              onClick={() => {
-                setSuggestedDoctors(undefined);
-              }}
+              onClick={() => setSuggestedDoctors(undefined)}
+              className="border-gray-700 text-black hover:bg-gray-800 hover:text-white"
             >
               Cancel
             </Button>
@@ -120,28 +129,28 @@ function AddNewSessionDialog() {
             <Button
               type="submit"
               disabled={note.length === 0 || loading}
-              className="cursor-pointer"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white"
               onClick={async () => await onClickNext()}
             >
-              Next{" "}
+              Next
               {loading ? (
-                <Loader2 className="animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin ml-2" />
               ) : (
-                <IconArrowRight />
+                <ArrowRight className="w-4 h-4 ml-2" />
               )}
             </Button>
           ) : (
             <Button
               type="submit"
-              className="cursor-pointer"
               disabled={loading || !SelectedDoctor}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white"
               onClick={() => startConsultation()}
             >
               Start Consultation
               {loading ? (
-                <Loader2 className="animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin ml-2" />
               ) : (
-                <IconArrowRight />
+                <ArrowRight className="w-4 h-4 ml-2" />
               )}
             </Button>
           )}
@@ -150,4 +159,5 @@ function AddNewSessionDialog() {
     </Dialog>
   );
 }
+
 export default AddNewSessionDialog;
