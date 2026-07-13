@@ -4,6 +4,46 @@ import { sessionChatTable } from "@/config/schema";
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
+function buildFallbackReport({
+  messages,
+  sessioninfo,
+  sessionid,
+  username,
+}: {
+  messages?: Array<{ role?: string; text?: string }>;
+  sessioninfo?: Record<string, unknown>;
+  sessionid?: string;
+  username?: string;
+}) {
+  const userMessages = (messages ?? []).filter((message) => message.role === "user");
+  const latestUserText = userMessages[userMessages.length - 1]?.text ?? "Symptoms discussed during the consultation.";
+  const doctorName =
+    (sessioninfo as { selectedDoctor?: { specialist?: string } } | undefined)?.selectedDoctor?.specialist ??
+    "General Physician AI";
+
+  const symptoms = latestUserText
+    .toLowerCase()
+    .split(/[,.;!?]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 4);
+
+  return {
+    sessionId: sessionid ?? "fallback-session",
+    agent: doctorName,
+    user: username ?? "Anonymous",
+    timestamp: new Date().toISOString(),
+    chiefComplaint: latestUserText || "Consultation summary",
+    summary:
+      "The conversation covered the user’s reported symptoms and the assistant recommended prompt medical follow-up if symptoms worsen.",
+    symptoms: symptoms.length ? symptoms : ["reported symptoms"],
+    duration: "Recent episode",
+    severity: "moderate",
+    medicationsMentioned: [],
+    recommendations: ["Rest and monitor symptoms", "Contact a clinician if symptoms worsen"],
+  };
+}
+
 export async function POST(req: NextRequest) {
   const { messages, sessioninfo, sessionid, username } = await req.json();
 
@@ -45,25 +85,33 @@ Only include valid fields. Respond with nothing else.
       JSON.stringify(sessioninfo) +
       ", Converstaion: " +
       JSON.stringify(messages);
-    const completion = await openai.chat.completions.create({
-      model: "arcee-ai/trinity-large-preview:free",
-      messages: [
-        { role: "system", content: REPORT_GENERATION_PROMPT },
-        {
-          role: "user",
-          content: USER_INPUT,
-        },
-      ],
-    });
-    const rawResponse = completion?.choices[0]?.message?.content;
-    console.log("Raw Response:", rawResponse);
-    if (!rawResponse) {
-      return NextResponse.json({ doctors: [] });
-    }
-    const parsed = JSON.parse(rawResponse.replace(/```json|```/g, "").trim());
-    console.log("Parsed Response:", parsed);
 
-    const result = await db
+    let parsed = buildFallbackReport({ messages, sessioninfo, sessionid, username });
+
+    if (openai && (process.env.OPEN_ROUTER_API_KEY || process.env.OPENAI_API_KEY)) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "arcee-ai/trinity-large-preview:free",
+          messages: [
+            { role: "system", content: REPORT_GENERATION_PROMPT },
+            {
+              role: "user",
+              content: USER_INPUT,
+            },
+          ],
+        });
+        const rawResponse = completion?.choices[0]?.message?.content;
+        if (rawResponse) {
+          parsed = JSON.parse(rawResponse.replace(/```json|```/g, "").trim());
+        }
+      } catch (e) {
+        console.warn("AI report generation failed, using fallback report", e);
+      }
+    } else {
+      console.warn("OPEN_ROUTER_API_KEY is missing; using fallback report payload.");
+    }
+
+    await db
       .update(sessionChatTable)
       .set({
         report: parsed,

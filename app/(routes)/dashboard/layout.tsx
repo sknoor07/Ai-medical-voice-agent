@@ -1,17 +1,19 @@
+"use client";
+
 import React from "react";
 import DashboardHeader from "./_components/DashboardHeader";
 
-function DashbaordLayout({
+function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="min-h-screen bg-[#0a0a0f]">
       <DashboardHeader />
-      <div className="px-5  py-3.5 md:px-20 lg:px-40">{children}</div>
+      <div className="pt-20">{children}</div>
     </div>
   );
 }
 
-export default DashbaordLayout;
+export default DashboardLayout;

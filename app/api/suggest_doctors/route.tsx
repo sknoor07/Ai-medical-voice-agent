@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { notes } = await req.json();
   try {
+    if (!openai) {
+      return NextResponse.json({ doctors: [] }, { status: 200 });
+    }
+
     const completion = await openai.chat.completions.create({
       model: "arcee-ai/trinity-large-preview:free",
       messages: [
