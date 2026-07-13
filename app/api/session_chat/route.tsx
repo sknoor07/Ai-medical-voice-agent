@@ -1,17 +1,31 @@
 import { db } from "@/config/db";
 import { NextRequest, NextResponse } from "next/server";
-import { sessionChatTable } from "@/config/schema";
+import { sessionChatTable, usersTable } from "@/config/schema";
 import { v4 as uuidv4 } from "uuid";
 import { currentUser } from "@clerk/nextjs/server";
 import { desc, eq } from "drizzle-orm";
-import { json } from "drizzle-orm/pg-core";
-import { useUser } from "@clerk/nextjs";
 
 export async function POST(request: NextRequest) {
   const { notes, selectedDoctor } = await request.json();
   try {
     const uuid = uuidv4();
     const user = await currentUser();
+    const email = user?.primaryEmailAddress?.emailAddress || "unknown";
+
+    const existingUser = await db
+      .select({ email: usersTable.email })
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1);
+
+    if (!existingUser.length) {
+      await db.insert(usersTable).values({
+        name: user?.fullName || "No Name",
+        email,
+        credits: 10,
+      });
+    }
+
     const result = await db
       .insert(sessionChatTable)
       .values({
@@ -20,7 +34,7 @@ export async function POST(request: NextRequest) {
         selectedDoctor: selectedDoctor,
         conversation: {},
         report: {},
-        createdBy: user?.primaryEmailAddress?.emailAddress || "unknown",
+        createdBy: email,
         createdOn: new Date().toString(),
       })
       .returning();
@@ -38,7 +52,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("sessionId");
-    const user = await currentUser();
+    const user = await currentUser().catch(() => null);
     if (!sessionId) {
       return NextResponse.json(
         { error: "sessionId is required" },
@@ -46,9 +60,6 @@ export async function GET(request: NextRequest) {
       );
     }
     const email = user?.primaryEmailAddress?.emailAddress;
-    if (!email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     if (sessionId == "all") {
       const sessions = await db
         .select()
