@@ -2,14 +2,14 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Mic, Play, Star } from "lucide-react";
 
-// Pre-defined random values to avoid re-computation
 const waveBars = Array.from({ length: 40 }, (_, i) => ({
   id: i,
   delay: `${(i * 0.05).toFixed(2)}s`,
-  duration: `${(0.4 + Math.random() * 0.4).toFixed(2)}s`,
-  height: `${(15 + Math.random() * 60).toFixed(0)}%`,
+  duration: `${(0.4 + (i % 8) * 0.05).toFixed(2)}s`,
+  height: `${(15 + ((i * 7) % 60)).toFixed(0)}%`,
 }));
 
 export function HeroSection() {
@@ -79,7 +79,10 @@ export function HeroSection() {
               <Mic className="w-5 h-5" />
               Start Voice Chat
             </button>
-            <button className="px-8 py-4 rounded-2xl border border-gray-700 text-gray-300 font-semibold hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center gap-2 backdrop-blur-sm will-change-transform">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="px-8 py-4 rounded-2xl border border-gray-700 text-gray-300 font-semibold hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center gap-2 backdrop-blur-sm will-change-transform"
+            >
               <Play className="w-5 h-5" />
               Watch Demo
             </button>
@@ -98,10 +101,12 @@ export function HeroSection() {
                 "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
                 "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
               ].map((src, i) => (
-                <img
+                <Image
                   key={i}
                   src={src}
                   alt="User"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full border-2 border-[#0a0a0f] object-cover"
                   loading="lazy"
                 />
@@ -183,7 +188,7 @@ export function HeroSection() {
                 </div>
                 <div className="bg-gray-800/50 rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
                   <p className="text-sm text-gray-300">
-                    Hello! I'm your AI medical assistant. How are you feeling
+                    Hello! I&apos;m your AI medical assistant. How are you feeling
                     today?
                   </p>
                 </div>
@@ -197,7 +202,7 @@ export function HeroSection() {
               >
                 <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs border border-cyan-500/20">
                   <p className="text-sm text-cyan-100">
-                    I've been having headaches and a slight fever for the past
+                    I&apos;ve been having headaches and a slight fever for the past
                     two days.
                   </p>
                 </div>

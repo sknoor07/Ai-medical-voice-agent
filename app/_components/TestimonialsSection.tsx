@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
+import Image from "next/image";
 import { useRef } from "react";
 import { Star } from "lucide-react";
 
@@ -75,13 +76,16 @@ export function TestimonialsSection() {
                 ))}
               </div>
               <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                "{t.quote}"
+                &quot;{t.quote}&quot;
               </p>
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src={t.image}
                   alt={t.name}
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover"
+                  loading="lazy"
                 />
                 <div>
                   <p className="text-sm font-semibold">{t.name}</p>

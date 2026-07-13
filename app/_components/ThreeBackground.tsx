@@ -10,6 +10,7 @@ export function ThreeBackground() {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
+    let animationFrameId = 0;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -120,7 +121,7 @@ export function ThreeBackground() {
     window.addEventListener("mousemove", handleMouseMove);
 
     const animate = () => {
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
 
       const posArray = particles.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
@@ -190,8 +191,19 @@ export function ThreeBackground() {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      cancelAnimationFrame(animationFrameId);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      particles.dispose();
+      lineGeometry.dispose();
+      ringGeometry.dispose();
+      particleMaterial.dispose();
+      lineMaterial.dispose();
+      ringMaterial.dispose();
+      rings.forEach((ring) => {
+        ring.geometry.dispose();
+        (ring.material as THREE.Material).dispose();
+      });
       renderer.dispose();
     };
   }, []);

@@ -39,7 +39,11 @@ function AddNewSessionDialog() {
   };
 
   useEffect(() => {
-    getHistoryList();
+    const timer = window.setTimeout(() => {
+      void getHistoryList();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   async function onClickNext() {
@@ -120,7 +124,7 @@ function AddNewSessionDialog() {
             <Button
               variant="outline"
               onClick={() => setSuggestedDoctors(undefined)}
-              className="border-gray-700 text-black hover:bg-gray-800 hover:text-white"
+              className="border-gray-700 text-gray-100 hover:bg-gray-800 hover:text-white"
             >
               Cancel
             </Button>

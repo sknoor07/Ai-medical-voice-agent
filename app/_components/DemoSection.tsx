@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { Mic, Check, Zap } from "lucide-react";
 
 export function DemoSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const router = useRouter();
 
   const benefits = [
     "Instant symptom assessment",
@@ -47,7 +49,10 @@ export function DemoSection() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-8 px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all hover:scale-105 flex items-center gap-2">
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="mt-8 px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all hover:scale-105 flex items-center gap-2"
+                >
                   <Zap className="w-5 h-5" />
                   Launch Demo
                 </button>

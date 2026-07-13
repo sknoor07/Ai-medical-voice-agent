@@ -1,13 +1,14 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { MessageSquare, History, CreditCard, User, Home } from "lucide-react";
+import { MessageSquare, History, CreditCard, User, Home, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 function DashboardHeader() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const options = [
     { id: 1, name: "Home", path: "/dashboard", icon: Home },
@@ -52,16 +53,49 @@ function DashboardHeader() {
           })}
         </div>
 
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-gray-700 flex items-center justify-center">
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: "w-7 h-7",
-              },
-            }}
-          />
+        <div className="flex items-center gap-3">
+          <button
+            className="md:hidden text-gray-400"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label="Toggle navigation menu"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-gray-700 flex items-center justify-center">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "w-7 h-7",
+                },
+              }}
+            />
+          </div>
         </div>
       </div>
+
+      {menuOpen && (
+        <div className="md:hidden mt-4 rounded-2xl border border-gray-800/80 bg-[#111118]/90 p-3 space-y-2">
+          {options.map((option) => {
+            const isActive = pathname === option.path;
+            const Icon = option.icon;
+            return (
+              <Link
+                key={option.id}
+                href={option.path}
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-gray-800/70 text-white"
+                    : "text-gray-400 hover:bg-gray-800/50 hover:text-white"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {option.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

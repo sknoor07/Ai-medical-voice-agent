@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { doctorAgent } from "../../_components/DoctorAgentCard";
 import {
   ArrowRight,
@@ -201,15 +201,20 @@ function MedicalAgentSessionPage() {
     setCallEnded(true);
   };
 
-  const handleMessage = (message: any) => {
+  const handleMessage = (message: {
+    type?: string;
+    role?: string;
+    transcriptType?: string;
+    transcript?: string;
+  }) => {
     if (message.type === "transcript") {
       const { role, transcriptType, transcript } = message;
-      console.log(`${message.role}: ${message.transcript}`);
-      if (transcriptType == "partial") {
-        setLiveTranscript(transcript);
-        setCurrentRole(role);
-      } else if (transcriptType == "final") {
-        setFinalMessages((prev) => [...prev, { role: role, text: transcript }]);
+      console.log(`${role}: ${transcript}`);
+      if (transcriptType === "partial") {
+        setLiveTranscript(transcript ?? "");
+        setCurrentRole(role ?? null);
+      } else if (transcriptType === "final") {
+        setFinalMessages((prev) => [...prev, { role: role ?? "assistant", text: transcript ?? "" }]);
         setLiveTranscript("");
         setCurrentRole(null);
       }
@@ -265,7 +270,7 @@ function MedicalAgentSessionPage() {
       setloading(false);
     });
 
-    // @ts-ignore
+    // @ts-expect-error - Vapi's start signature is not fully typed in this SDK version.
     vapi.start(voiceAgentConfig);
     setVapiInstance(vapi);
   };
@@ -283,13 +288,20 @@ function MedicalAgentSessionPage() {
     setVapiInstance(null);
     setCallSarted(false);
     setCallEnded(true);
-    
+
     if (callStarted) {
-      const result = await generateReport();
-      toast.success("Your Report Generated Successfully");
-      router.replace("/dashboard");
+      setloading(true);
+      try {
+        await generateReport();
+        toast.success("Your Report Generated Successfully");
+        router.replace("/dashboard");
+      } catch (error) {
+        console.error("Failed to generate report", error);
+        toast.error("Failed to generate your report. Please try again.");
+      } finally {
+        setloading(false);
+      }
     }
-    setloading(false);
   };
 
   const generateReport = async () => {
@@ -528,7 +540,7 @@ function MedicalAgentSessionPage() {
                         <div>
                           <p className="text-gray-300 font-medium">Start a conversation</p>
                           <p className="text-sm text-gray-500 mt-1">
-                            Click "Start Session" to begin speaking with your AI medical assistant
+                            Click &quot;Start Session&quot; to begin speaking with your AI medical assistant
                           </p>
                         </div>
                       </div>

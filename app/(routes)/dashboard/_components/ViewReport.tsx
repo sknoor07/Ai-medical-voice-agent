@@ -66,11 +66,15 @@ function ViewReport({ entryhistory }: Props) {
                     </div>
                     <div>
                       <p className="text-gray-500">Date</p>
-                      <p className="text-white font-medium">June 18th 2025, 10:27 am</p>
+                      <p className="text-white font-medium">
+                        {entryhistory.report?.timestamp ?? "Not available"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-500">Agent</p>
-                      <p className="text-white font-medium">General Physician AI</p>
+                      <p className="text-white font-medium">
+                        {entryhistory.report?.agent ?? "Not available"}
+                      </p>
                     </div>
                   </div>
                 </div>

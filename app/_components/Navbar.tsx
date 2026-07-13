@@ -9,7 +9,7 @@ import { Menu, X } from "lucide-react";
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   useEffect(() => {
@@ -68,14 +68,14 @@ export function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-violet-400 group-hover:w-full transition-all duration-300" />
             </a>
           ))}
-          {!user ? (
+          {isLoaded && !user ? (
             <button
               onClick={() => router.push("/sign-in")}
               className="px-6 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-sm font-medium text-white hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-105"
             >
               Get Started
             </button>
-          ) : (
+          ) : isLoaded && user ? (
             <div className="flex items-center gap-4">
               <UserButton />
               <Button
@@ -85,7 +85,7 @@ export function Navbar() {
                 Dashboard
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
 
         <button
@@ -108,7 +108,7 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          {!user ? (
+          {isLoaded && !user ? (
             <button
               onClick={() => {
                 router.push("/sign-in");
@@ -118,14 +118,14 @@ export function Navbar() {
             >
               Get Started
             </button>
-          ) : (
+          ) : isLoaded && user ? (
             <div className="flex items-center gap-4">
               <UserButton />
               <Button onClick={() => router.push("/dashboard")}>
                 Dashboard
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </nav>
