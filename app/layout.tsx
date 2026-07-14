@@ -33,7 +33,7 @@ export default function RootLayout({
             defer
             data-website-id="06b8b144-d262-44c7-b621-26805ead5fef"
             data-domain="ai-medical-voice-agent-git-main-sknoor07s-projects.vercel.app"
-            src="https://google-analytics-clone-o7jcvuii4-sknoor07s-projects.vercel.app/analytics.js"
+            src="https://google-analytics-clone.vercel.app/analytics.js"
           ></script>
         </head>
         <body
